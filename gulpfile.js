@@ -1,14 +1,15 @@
 var gulp = require('gulp'),
-	runSequence = require('run-sequence');
+  runSequence = require('run-sequence');
 	browserSync = require('browser-sync').create();
 	pug = require('gulp-pug');
-	less = require('gulp-less');
+	sass = require('gulp-sass');
 	path = require('path');
-	autoprefixer = require('gulp-autoprefixer');
-    concat = require('gulp-concat'), 
-    uglify = require('gulp-uglify'), 
-    rename = require('gulp-rename'), 
-    del = require('del');
+  autoprefixer = require('gulp-autoprefixer');
+  imagemin = require('gulp-imagemin');
+  concat = require('gulp-concat');
+  uglify = require('gulp-uglify'); 
+  rename = require('gulp-rename'); 
+  del = require('del');
 
 /* --------------------------------------------------------
    ----------------- Таски ---------------------------
@@ -22,10 +23,10 @@ gulp.task('pug', function buildHTML() {
     .pipe(gulp.dest("dist"))
 });
 
-gulp.task('less', function () {
-  	return gulp.src('app/less/**/*.less')
-    .pipe(less({
-      	paths: [ path.join(__dirname, 'less', 'includes') ]
+gulp.task('sass', function () {
+  	return gulp.src('app/sass/**/*.sass')
+    .pipe(sass({
+      	paths: [ path.join(__dirname, 'sass', 'includes') ]
     }))
     .pipe(autoprefixer({
         browsers: ['last 2 versions'],
@@ -33,13 +34,22 @@ gulp.task('less', function () {
     }))
     .pipe(gulp.dest('./dist/css'));
 });
-
-gulp.task('scripts', function() {
-    return gulp.src('app/js/*.js') 
-        .pipe(concat('scripts.js')) 
-        .pipe(gulp.dest('dist/js')); 
+gulp.task('css', function () {
+  return gulp.src('app/css/**/*.css')
+  
+  .pipe(gulp.dest('./dist/css'));
 });
 
+gulp.task('scripts', function() {
+    return gulp.src('app/js/**/*.js') 
+    //.pipe(concat('scripts.js')) 
+    .pipe(gulp.dest('dist/js')); 
+});
+gulp.task('imgs', function() {
+  return gulp.src('app/img/**/*')
+      .pipe(imagemin())
+      .pipe(gulp.dest('dist/img'))
+});
 
 gulp.task('clean', function () {
   return del([
@@ -47,15 +57,17 @@ gulp.task('clean', function () {
   ]);
 });
 
-gulp.task('build', gulp.series('clean', 'pug', 'less', 'scripts', function(done) {
+gulp.task('build', gulp.series('clean', 'pug', 'sass', 'scripts', 'imgs', 'css', function(done) {
   // do more stuff
   done();
 }));
 
 gulp.task('watch', function() {
     gulp.watch('app/pug/*.pug', gulp.series ('pug'));
-    gulp.watch('app/less/*.less', gulp.series ('less'));
+    gulp.watch('app/sass/*.sass', gulp.series ('sass'));
     gulp.watch('app/js/*.js', gulp.series ('scripts'));
+    gulp.watch('app/img/*', gulp.series ('imgs'));
+    gulp.watch('app/css/*', gulp.series ('css'));
 });
 
 gulp.task('server', function() {

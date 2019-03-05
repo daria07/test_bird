@@ -14,6 +14,7 @@
     "gulp-autoprefixer": "^6.0.0",
     "gulp-concat": "latest",
     "gulp-cssnano": "latest",
+    "gulp-imagemin": "^5.0.3",
     "gulp-rename": "latest",
     "gulp-sass": "^4.0.2",
     "gulp-uglify": "latest",
